@@ -1,18 +1,119 @@
-import { MigrationInterface, QueryRunner } from "typeorm";
+import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
 export class CreateTable1749004271881 implements MigrationInterface {
-    name = 'CreateTable1749004271881'
+  name = 'CreateTable1749004271881';
 
-    public async up(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`CREATE TABLE "url" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "originalUrl" character varying NOT NULL, "shortCode" character varying NOT NULL, "clickCount" integer NOT NULL DEFAULT '0', "deletedAt" TIMESTAMP, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "userId" uuid, CONSTRAINT "UQ_df4aaf7b2c247152f3e92fe7c78" UNIQUE ("shortCode"), CONSTRAINT "PK_7421088122ee64b55556dfc3a91" PRIMARY KEY ("id"))`);
-        await queryRunner.query(`CREATE TABLE "users" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "name" character varying NOT NULL, "email" character varying NOT NULL, "password" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "deletedAt" TIMESTAMP, CONSTRAINT "UQ_97672ac88f789774dd47f7c8be3" UNIQUE ("email"), CONSTRAINT "PK_a3ffb1c0c8416b9fc6f907b7433" PRIMARY KEY ("id"))`);
-        await queryRunner.query(`ALTER TABLE "url" ADD CONSTRAINT "FK_2919f59acab0f44b9a244d35bdb" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+  public async up(queryRunner: QueryRunner): Promise<void> {
+    const dbType = queryRunner.connection.options.type;
+
+    await queryRunner.createTable(
+      new Table({
+        name: 'users',
+        columns: [
+          {
+            name: 'id',
+            type: this.resolveIdType(dbType),
+            isPrimary: true,
+            isNullable: false,
+            generationStrategy: this.resolveGenerationStrategy(dbType),
+            default: this.resolveIdDefault(dbType),
+          },
+          {
+            name: 'name',
+            type: 'varchar',
+            length: '255',
+            isNullable: false,
+          },
+          {
+            name: 'email',
+            type: 'varchar',
+            length: '255',
+            isNullable: false,
+            isUnique: true,
+          },
+          {
+            name: 'password',
+            type: 'varchar',
+            length: '255',
+            isNullable: false,
+          },
+          {
+            name: 'createdAt',
+            type: this.resolveDateType(dbType),
+            default: this.resolveDateDefault(dbType),
+            isNullable: false,
+          },
+          {
+            name: 'updatedAt',
+            type: this.resolveDateType(dbType),
+            default: this.resolveDateDefault(dbType),
+            isNullable: false,
+          },
+          {
+            name: 'deletedAt',
+            type: this.resolveDateType(dbType),
+            isNullable: true,
+          },
+        ],
+      }),
+      true,
+    );
+  }
+
+  public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(`DROP TABLE "users"`);
+  }
+
+  private resolveIdType(db: string): string {
+    switch (db) {
+      case 'postgres':
+        return 'uuid';
+      case 'mssql':
+        return 'uniqueidentifier';
+      case 'sqlite':
+        return 'text';
+      default:
+        return 'char';
     }
+  }
 
-    public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`ALTER TABLE "url" DROP CONSTRAINT "FK_2919f59acab0f44b9a244d35bdb"`);
-        await queryRunner.query(`DROP TABLE "users"`);
-        await queryRunner.query(`DROP TABLE "url"`);
+  private resolveGenerationStrategy(db: string): 'uuid' | undefined {
+    return db === 'postgres' ? 'uuid' : undefined;
+  }
+
+  private resolveIdDefault(db: string): string | undefined {
+    switch (db) {
+      case 'postgres':
+        return 'gen_random_uuid()';
+      case 'mysql':
+      case 'mariadb':
+        return '(UUID())';
+      case 'mssql':
+        return 'NEWID()';
+      case 'sqlite':
+        return '(lower(hex(randomblob(16))))';
+      default:
+        return undefined;
     }
+  }
 
+  private resolveDateType(db: string): string {
+    return db === 'mssql' ? 'datetime' : 'timestamp';
+  }
+
+  private resolveDateDefault(db: string): string {
+    switch (db) {
+      case 'postgres':
+        return 'now()';
+      case 'mysql':
+      case 'mariadb':
+        return 'CURRENT_TIMESTAMP';
+      case 'sqlite':
+        return "(datetime('now'))";
+      case 'mssql':
+        return 'GETDATE()';
+      default:
+        return 'CURRENT_TIMESTAMP';
+    }
+  }
 }
