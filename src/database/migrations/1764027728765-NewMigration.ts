@@ -7,15 +7,13 @@ import {
   resolveIdType,
 } from '../util/data';
 
-export class CreateTable1749004271881 implements MigrationInterface {
-  name = 'CreateTable1749004271881';
-
+export class NewMigration1764027728765 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     const dbType = queryRunner.connection.options.type;
 
     await queryRunner.createTable(
       new Table({
-        name: 'users',
+        name: 'url',
         columns: [
           {
             name: 'id',
@@ -26,22 +24,27 @@ export class CreateTable1749004271881 implements MigrationInterface {
             default: resolveIdDefault(dbType),
           },
           {
-            name: 'name',
+            name: 'originalUrl',
             type: 'varchar',
             length: '255',
             isNullable: false,
           },
           {
-            name: 'email',
+            name: 'shortCode',
             type: 'varchar',
             length: '255',
             isNullable: false,
             isUnique: true,
           },
           {
-            name: 'password',
-            type: 'varchar',
-            length: '255',
+            name: 'clickCount',
+            type: 'int',
+            isNullable: false,
+            default: 0, // ou "'0'" se preferir string
+          },
+          {
+            name: 'userId',
+            type: resolveIdType(dbType),
             isNullable: false,
           },
           {
@@ -65,9 +68,19 @@ export class CreateTable1749004271881 implements MigrationInterface {
       }),
       true,
     );
+
+    foreignKeys: [
+      {
+        columnNames: ['userId'],
+        referencedTableName: 'users',
+        referencedColumnNames: ['id'],
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+      },
+    ];
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`DROP TABLE "users"`);
+    await queryRunner.dropTable('url');
   }
 }
