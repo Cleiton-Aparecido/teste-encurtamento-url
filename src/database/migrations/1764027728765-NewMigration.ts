@@ -45,7 +45,7 @@ export class NewMigration1764027728765 implements MigrationInterface {
           {
             name: 'userId',
             type: resolveIdType(dbType),
-            isNullable: false,
+            isNullable: true,
           },
           {
             name: 'createdAt',
