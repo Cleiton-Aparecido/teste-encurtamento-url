@@ -39,14 +39,6 @@ export class UrlsController {
   @ApiBody({
     description: 'Exemplo de url para encurtar',
     type: UrlDto,
-    examples: {
-      exemplo: {
-        summary: 'Exemplo de url para encurtar',
-        value: {
-          originalUrl: 'https://www.youtube.com/',
-        },
-      },
-    },
   })
   @ApiResponse({
     status: 201,
@@ -86,7 +78,7 @@ export class UrlsController {
     ],
   })
   @UseGuards(JwtAuthGuard)
-  @Get('urls')
+  @Get('my-urls')
   async list(@CurrentUser() user: User): Promise<Url[]> {
     return this.service.listByUser(user.id);
   }
@@ -133,7 +125,7 @@ export class UrlsController {
     },
   })
   @UseGuards(JwtAuthGuard)
-  @Put('urls/:id')
+  @Put('my-urls/:id')
   async update(
     @Param('id') id: string,
     @Body() data: UrlDto,
@@ -185,10 +177,16 @@ export class UrlsController {
       example: 'q2Hai1',
     },
   })
-  @Get(':code')
+  @Get(':short')
   @Redirect()
-  async redirect(@Param('code') code: string) {
-    const target = await this.service.redirect(code);
+  /*************  ✨ Windsurf Command ⭐  *************/
+  /**
+   * Endpoint para redirecionar ao url original
+   * @param short Codigo encurtado da url
+   * @returns objeto com a propriedade url contendo o link original
+/*******  95a81e92-ad5a-4976-ae5a-22ddac9b00d1  *******/
+  async redirect(@Param('short') short: string) {
+    const target = await this.service.redirect(short);
     return { url: target };
   }
 }

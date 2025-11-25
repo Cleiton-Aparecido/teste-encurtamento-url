@@ -2,6 +2,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Url } from 'src/config/entities/url.entity';
 import { IsNull, Repository } from 'typeorm';
 import { UrlDeleteDto } from '../dto/url-delete.dto';
+import { NotFoundException } from '@nestjs/common';
 
 export class UrlRepository {
   constructor(
@@ -22,10 +23,17 @@ export class UrlRepository {
   }
 
   async findOneByOrFail(filter: Partial<Url>) {
-    const url = await this.urlRepository.findOneByOrFail({
-      shortCode: filter.shortCode,
-      deletedAt: IsNull(),
+    const url = await this.urlRepository.findOne({
+      where: {
+        shortCode: filter.shortCode,
+        deletedAt: IsNull(),
+      },
     });
+
+    if (!url) {
+      throw new NotFoundException('URL não encontrada');
+    }
+
     return url;
   }
 

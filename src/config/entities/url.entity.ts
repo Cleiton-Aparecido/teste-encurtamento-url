@@ -26,7 +26,7 @@ export class Url {
   deletedAt: Date;
 
   @ManyToOne(() => User, (user) => user.urls, { nullable: true })
-  user: User;
+  user?: User;
 
   @CreateDateColumn()
   createdAt: Date;
