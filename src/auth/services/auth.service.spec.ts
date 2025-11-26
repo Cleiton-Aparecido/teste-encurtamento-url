@@ -4,12 +4,12 @@ import * as bcrypt from 'bcrypt';
 
 import { JwtService } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
-import { UsersRepository } from 'src/users/repository/users.repository';
 import { AuthDto } from '../dto/auth.dto';
+import { IUsersRepository } from 'src/users/interface/users.repository.interface';
 
 describe('AuthService (unit)', () => {
   let service: AuthService;
-  let usersRepository: jest.Mocked<UsersRepository>;
+  let usersRepository: jest.Mocked<IUsersRepository>;
   let jwtService: jest.Mocked<JwtService>;
 
   const testUser = {
@@ -20,19 +20,28 @@ describe('AuthService (unit)', () => {
   } as any;
 
   beforeEach(async () => {
+    const usersRepositoryMock = {
+      findOne: jest.fn(),
+      // se tiver mais métodos na interface, adiciona aqui
+    } as unknown as jest.Mocked<IUsersRepository>;
+
+    const jwtServiceMock = {
+      sign: jest.fn(),
+    } as unknown as jest.Mocked<JwtService>;
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AuthService,
-        { provide: UsersRepository, useValue: { findOne: jest.fn() } },
-        { provide: JwtService, useValue: { sign: jest.fn() } },
+        { provide: IUsersRepository, useValue: usersRepositoryMock },
+        { provide: JwtService, useValue: jwtServiceMock },
       ],
     }).compile();
 
     service = module.get<AuthService>(AuthService);
-    usersRepository = module.get(
-      UsersRepository,
-    ) as jest.Mocked<UsersRepository>;
-    jwtService = module.get(JwtService) as jest.Mocked<JwtService>;
+
+    // reaproveita os mocks que você mesmo criou
+    usersRepository = usersRepositoryMock;
+    jwtService = jwtServiceMock;
 
     jest.clearAllMocks();
   });
@@ -45,6 +54,7 @@ describe('AuthService (unit)', () => {
       jest.spyOn(bcrypt, 'compare').mockImplementation(async () => true);
 
       const result = await service.validateEmail(dto);
+
       expect(usersRepository.findOne).toHaveBeenCalledWith({
         email: dto.email,
       });
@@ -57,7 +67,9 @@ describe('AuthService (unit)', () => {
 
     it('should return null if user not found', async () => {
       usersRepository.findOne.mockResolvedValue(null);
+
       const result = await service.validateEmail(dto);
+
       expect(result).toBeNull();
     });
 
@@ -66,6 +78,7 @@ describe('AuthService (unit)', () => {
       jest.spyOn(bcrypt, 'compare').mockImplementation(async () => false);
 
       const result = await service.validateEmail(dto);
+
       expect(result).toBeNull();
     });
   });
@@ -82,6 +95,7 @@ describe('AuthService (unit)', () => {
       jwtService.sign.mockReturnValue('signed-token');
 
       const result = await service.login(dto);
+
       expect(service.validateEmail).toHaveBeenCalledWith(dto);
       expect(jwtService.sign).toHaveBeenCalledWith(
         { name: testUser.name, email: testUser.email, id: testUser.id },

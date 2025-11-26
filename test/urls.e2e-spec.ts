@@ -70,9 +70,9 @@ describe('UrlsController (e2e)', () => {
       });
   });
 
-  it('GET /urls → deve listar urls do usuário (token obrigatório)', () => {
+  it('GET /my-urls → deve listar urls do usuário (token obrigatório)', () => {
     return request(app.getHttpServer())
-      .get('/urls')
+      .get('/my-urls')
       .set('Authorization', `Bearer ${token}`)
       .expect(200)
       .then((res) => {
@@ -86,11 +86,11 @@ describe('UrlsController (e2e)', () => {
       });
   });
 
-  it('PUT /urls/:id → deve atualizar url (token obrigatório)', () => {
+  it('PUT /my-urls/:id → deve atualizar url (token obrigatório)', () => {
     const updated = { originalUrl: 'https://changed.com' };
     mockRepo.save.mockResolvedValue({ ...mockUrl, ...updated });
     return request(app.getHttpServer())
-      .put(`/urls/${mockUrl.id}`)
+      .put(`/my-urls/${mockUrl.id}`)
       .set('Authorization', `Bearer ${token}`)
       .send(updated)
       .expect(200)
@@ -102,9 +102,9 @@ describe('UrlsController (e2e)', () => {
       });
   });
 
-  it('DELETE /urls/:id → deve remover url (token obrigatório)', () => {
+  it('DELETE /my-urls/:id → deve remover url (token obrigatório)', () => {
     return request(app.getHttpServer())
-      .delete(`/urls/${mockUrl.id}`)
+      .delete(`/my-urls/${mockUrl.id}`)
       .set('Authorization', `Bearer ${token}`)
       .expect(204);
   });
