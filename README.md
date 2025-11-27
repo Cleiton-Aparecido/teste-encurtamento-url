@@ -125,7 +125,7 @@ Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
    PORT=3011
    DB_CONNECTION=postgres
 
-
+   BASE_URL =
 
    JWT_SECRET=chavesecretaqualquer
 
