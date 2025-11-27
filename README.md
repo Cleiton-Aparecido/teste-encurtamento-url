@@ -108,18 +108,22 @@ Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
      - Docker Compose >= 1.29
 
 2. **Arquivo `.env` configurado**  
-   Na raiz do projeto, crie (ou verifique) o arquivo `.env` contendo pelo menos:
+   Na raiz do projeto, crie (ou verifique) o arquivo `.env` contendo variaveis:
 
    ```env
    # .env
    PORT=3000
-   DB_HOST=localhost
+   DB_HOST=db
    DB_PORT=5432
    DB_USER=postgres
    DB_PASSWORD=1234
    DB_DATABASE=urlencurtado
+   PORT=3011
+   DB_CONNECTION=postgres
+
+
+
    JWT_SECRET=chavesecretaqualquer
-   BASE_URL=http://localhost:3000
 
    ```
 
@@ -142,7 +146,7 @@ docker-compose up --build
     http://localhost:3000/api
 ```
 
-5. **Acessar banco de dados localmente**
+6. **Acessar banco de dados localmente**
 
 ```bash
     Banco de dados: postgres
@@ -151,10 +155,8 @@ docker-compose up --build
     User: postgres
     PASSWORD: 1234
     DATABASE: urlencurtado
+
 ```
-6. **Sugestão de melhoria**
-  - Implemetar validação de link's
-  - Validar se o link é validado. (obs: Permitir inserir link's que realmente exista)
-  - Validar se o link é segurado. (Obs: Caso um usuário insira um link malicioso, seria interessante ter uma tratativa)
-  - Implementação de Interfaces entre as camadas
-# teste-encurtamento-url
+
+7. **Roda aplicação local**
+   comando para rodar aplicação `docker compose up --build -d`
