@@ -157,7 +157,7 @@ export class UrlsController {
     },
   })
   @UseGuards(JwtAuthGuard)
-  @Delete('urls/:id')
+  @Delete('my-urls/:id')
   @HttpCode(204)
   async remove(@Param('id') id: string, @CurrentUser() user: User) {
     return await this.service.delete({ id, userId: user.id });

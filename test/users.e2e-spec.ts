@@ -1,12 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import {
+  ConflictException,
   INestApplication,
   ValidationPipe,
-  ConflictException,
 } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { IUsersRepository } from 'src/users/interface/users.repository.interface';
 import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
-import { UsersService } from 'src/users/services/users.service';
 
 describe('UsersController (e2e)', () => {
   let app: INestApplication;
@@ -18,7 +18,7 @@ describe('UsersController (e2e)', () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     })
-      .overrideProvider(UsersService)
+      .overrideProvider(IUsersRepository)
       .useValue(mockUsersService)
       .compile();
 
@@ -32,7 +32,11 @@ describe('UsersController (e2e)', () => {
   });
 
   it('POST /users → deve criar usuário com dados válidos', () => {
-    const dto = { email: 'user@example.com', name: 'user', password: '123456' };
+    const dto = {
+      email: 'user98189181@example.com',
+      name: 'user',
+      password: '123456',
+    };
     const successResponse = {
       statusCode: 201,
       message: 'Usuário criado com sucesso',

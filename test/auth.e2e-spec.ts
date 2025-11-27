@@ -3,7 +3,7 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
 import * as bcrypt from 'bcrypt';
 import { AppModule } from './../src/app.module';
-import { UsersRepository } from '../src/users/repository/users.repository';
+import { IUsersRepository } from 'src/users/interface/users.repository.interface';
 
 describe('AuthController (e2e)', () => {
   let app: INestApplication;
@@ -27,7 +27,7 @@ describe('AuthController (e2e)', () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     })
-      .overrideProvider(UsersRepository)
+      .overrideProvider(IUsersRepository)
       .useValue(mockUsersRepo)
       .compile();
 
