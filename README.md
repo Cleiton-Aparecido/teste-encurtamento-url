@@ -98,6 +98,10 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 
 Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
 
+# host de hospedagem: 
+`http://72.61.59.36:3011/api`
+
+
 # Documentação da aplicação
 
 1. **Docker & Docker Compose**
