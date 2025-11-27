@@ -1,4 +1,3 @@
-import { UrlDto } from '../dto/url.dto';
 import {
   BadRequestException,
   ConflictException,
@@ -7,13 +6,15 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { UrlRepository } from '../repository/url.repository';
 import { Url } from 'src/config/entities/url.entity';
 import { UrlDeleteDto } from '../dto/url-delete.dto';
+import { UrlDto } from '../dto/url.dto';
+import { IUrlRepository } from '../interface/url.repository.interface';
+import { UrlUserCase } from './url.usercase';
 
 @Injectable()
-export class UrlsService {
-  constructor(private readonly urlRepository: UrlRepository) {}
+export class UrlsService implements UrlUserCase {
+  constructor(private readonly urlRepository: IUrlRepository) {}
 
   private generateSlug(length = 6): string {
     const chars =
@@ -30,7 +31,7 @@ export class UrlsService {
     return exists ? this.generateCode() : nano;
   }
 
-  async shorten(dto: UrlDto, userId?: string) {
+  async shorten(dto: UrlDto, userId?: string): Promise<{ shortUrl: string }> {
     try {
       const baseUrl =
         process.env.BASE_URL || `http://localhost:${process.env.PORT}`;
@@ -87,7 +88,7 @@ export class UrlsService {
     }
   }
 
-  async redirect(code: string): Promise<any> {
+  async redirect(code: string): Promise<string> {
     try {
       const url = await this.urlRepository.findOneByOrFail({
         shortCode: code,
@@ -108,7 +109,7 @@ export class UrlsService {
     }
   }
 
-  async update(id: string, urlNew: UrlDto, userId: string) {
+  async update(id: string, urlNew: UrlDto, userId: string): Promise<Url> {
     try {
       const url = await this.urlRepository.findOneForIdUser(id, userId);
       if (!url) {

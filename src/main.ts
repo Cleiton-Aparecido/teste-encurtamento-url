@@ -15,7 +15,9 @@ async function bootstrap() {
   );
 
   setupSwagger(app);
-  await app.listen(process.env.PORT);
-  Logger.log(`Servidor rodando em http://localhost:${process.env.PORT}`);
+  await app.listen(process.env.PORT, '0.0.0.0');
+  Logger.log(
+    `Servidor rodando em ${process.env.BASE_URL || 'http://localhost'}:${process.env.PORT}`,
+  );
 }
 bootstrap();

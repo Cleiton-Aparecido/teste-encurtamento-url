@@ -4,9 +4,18 @@ import { Url } from 'src/config/entities/url.entity';
 import { UrlsService } from './services/url.service';
 import { UrlsController } from './controllers/url.controller';
 import { UrlRepository } from './repository/url.repository';
+import { UseCaseProvider } from './providers/user.provider';
+import { IUrlRepository } from './interface/url.repository.interface';
 @Module({
   imports: [forwardRef(() => urlModule), TypeOrmModule.forFeature([Url])],
   controllers: [UrlsController],
-  providers: [UrlsService, UrlRepository],
+  providers: [
+    UrlsService,
+    UseCaseProvider,
+    {
+      provide: IUrlRepository,
+      useClass: UrlRepository,
+    },
+  ],
 })
 export class urlModule {}

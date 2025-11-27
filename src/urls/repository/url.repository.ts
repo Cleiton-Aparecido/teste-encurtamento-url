@@ -1,10 +1,11 @@
+import { NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Url } from 'src/config/entities/url.entity';
 import { IsNull, Repository } from 'typeorm';
 import { UrlDeleteDto } from '../dto/url-delete.dto';
-import { NotFoundException } from '@nestjs/common';
+import { IUrlRepository } from '../interface/url.repository.interface';
 
-export class UrlRepository {
+export class UrlRepository implements IUrlRepository {
   constructor(
     @InjectRepository(Url)
     private urlRepository: Repository<Url>,
@@ -16,7 +17,7 @@ export class UrlRepository {
     });
   }
 
-  async updateOneMoreClickCount(id) {
+  async updateOneMoreClickCount(id): Promise<any> {
     return await this.urlRepository.update(id, {
       clickCount: () => '"clickCount" + 1',
     });
@@ -60,7 +61,7 @@ export class UrlRepository {
     return url;
   }
 
-  async delete(urlDelete: UrlDeleteDto) {
+  async delete(urlDelete: UrlDeleteDto): Promise<any> {
     return await this.urlRepository.update(
       { id: urlDelete.id, user: { id: urlDelete.userId } },
       { deletedAt: new Date() },
