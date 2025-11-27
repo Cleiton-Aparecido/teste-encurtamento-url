@@ -17,19 +17,18 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { UrlDto } from '../dto/url.dto';
-import { AuthGuard } from '@nestjs/passport';
-import { UrlsService } from '../services/url.service';
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
-import { User } from 'src/config/entities/user.entity';
-import { OptionalAuthGuard } from 'src/auth/optional-auth.guard';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { OptionalAuthGuard } from 'src/auth/optional-auth.guard';
 import { Url } from 'src/config/entities/url.entity';
+import { User } from 'src/config/entities/user.entity';
+import { UrlDto } from '../dto/url.dto';
+import { UrlUserCase } from '../services/url.usercase';
 
 @ApiTags('urls')
 @Controller()
 export class UrlsController {
-  constructor(private readonly service: UrlsService) {}
+  constructor(private readonly service: UrlUserCase) {}
 
   @ApiOperation({
     summary: 'Endpoint para encurtar url',
